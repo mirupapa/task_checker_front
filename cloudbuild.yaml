@@ -1,0 +1,11 @@
+steps:
+    - name: 'node'
+      entrypoint: 'yarn'
+      args: ['install']
+    
+    - name: 'node'
+      entrypoint: 'yarn'
+      args: ['run', 'build']
+    
+    - name: 'gcr.io/cloud-builders/gcloud'
+      args: ['app', 'deploy', 'app.yaml']
