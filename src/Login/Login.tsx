@@ -17,12 +17,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-interface FormValues {
+type FormValues = {
   userID: string
   password: string
 }
 
-interface FormProps {
+type FormProps = {
   userID?: string
   password?: string
 }
@@ -94,33 +94,8 @@ const Login = withFormik<FormProps, FormValues>({
   },
 })(InnerForm)
 
-export interface HandleQueryProps {
+export type HandleQueryProps = {
   children: ReactElement
 }
-
-// export const Auth: React.FC<HandleQueryProps> = ({ children }) => {
-//   const boo: boolean = false
-//   const headers = {
-//     'Authorization': `Bearer ${localStorage.getItem('task_checker_token')}`
-//   }
-//   return (
-//     boo ? <Redirect to='/login' /> : children
-//   )
-// }
-
-// export const Auth: React.FC<HandleQueryProps> = ({ children }) => {
-//   const headers = {
-//     'Authorization': `Bearer ${localStorage.getItem('task_checker_token')}`
-//   }
-//   return axios.post(process.env.REACT_APP_API_URL + '/auth', {}, {
-//     headers: headers
-//   })
-//     .then(() => {
-//       return children
-//     })
-//     .catch(() => {
-//       return <Redirect to='/login' />
-//     })
-// }
 
 export default Login

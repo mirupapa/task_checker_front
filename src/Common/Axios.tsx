@@ -6,7 +6,7 @@ export const PostApi = async (api: string, data: Object) => {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${token}`,
   }
-  const inctance = axios.create({
+  const instance = axios.create({
     method: 'POST',
     baseURL: process.env.REACT_APP_API_URL,
     headers: headers,
@@ -14,7 +14,7 @@ export const PostApi = async (api: string, data: Object) => {
     data: JSON.stringify(data),
   })
 
-  return await inctance(api)
+  return await instance(api)
     .then((results) => {
       return results
     })
