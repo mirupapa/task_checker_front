@@ -7,10 +7,13 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
-// import { TaskInfo } from 'Main';
 import { TaskInfo } from '../Main'
 
 const useStyles = makeStyles({
+  container: {
+    width: '80%',
+    height: '80%',
+  },
   table: {
     minWidth: 650,
   },
@@ -23,18 +26,18 @@ const SimpleTable: React.FunctionComponent<TaskInfo> = ({
   const classes = useStyles()
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} className={classes.container}>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            {columns.map((item, index) => {
-              return <TableCell key={index}>{item.title}</TableCell>
+            {columns.map((item) => {
+              return <TableCell key={item.field}>{item.title}</TableCell>
             })}
           </TableRow>
         </TableHead>
         <TableBody>
-          {records.map((item, index) => (
-            <TableRow key={index}>
+          {records.map((item) => (
+            <TableRow key={item.id}>
               <TableCell component="th" scope="row">
                 {item.id}
               </TableCell>

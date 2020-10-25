@@ -35,11 +35,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type FormValues = {
   mailAddress: string
+  userName: string
   password: string
 }
 
 type FormProps = {
   mailAddress?: string
+  userName?: string
   password?: string
 }
 
@@ -51,7 +53,7 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
     <form onSubmit={props.handleSubmit} className={classes.root}>
       <Paper className={classes.paper}>
         <Typography align="center" className={classes.typo}>
-          TASK CHECKER
+          SIGN UP
         </Typography>
         <Grid container justify="center">
           <TextField
@@ -64,6 +66,17 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
           />
           {props.touched.mailAddress && props.errors.mailAddress && (
             <div>{props.errors.mailAddress}</div>
+          )}
+          <TextField
+            id="userName"
+            label="userName"
+            required
+            value={props.values.userName}
+            onChange={props.handleChange}
+            className={classes.input}
+          />
+          {props.touched.userName && props.errors.userName && (
+            <div>{props.errors.userName}</div>
           )}
           <TextField
             id="password"
@@ -84,33 +97,27 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
             type="submit"
             disabled={props.isSubmitting}
           >
-            LOGIN
+            CREATE
           </Button>
         </Grid>
       </Paper>
-      <Button
-        className={classes.signUpButton}
-        variant="contained"
-        color="primary"
-        href="/signUp"
-      >
-        Sign Up
-      </Button>
     </form>
   )
 }
 
-const Login = withFormik<FormProps, FormValues>({
-  mapPropsToValues: () => ({ mailAddress: '', password: '' }),
+const SignUp = withFormik<FormProps, FormValues>({
+  mapPropsToValues: () => ({ mailAddress: '', userName: '', password: '' }),
   validationSchema: Yup.object().shape({
     mailAddress: Yup.string().required('required mailAddress'),
+    userName: Yup.string().required('required userName'),
     password: Yup.string().required('required password'),
   }),
   handleSubmit: (values, { setSubmitting }) => {
     setTimeout(() => {
       return axios
-        .post(`${process.env.REACT_APP_API_URL}/login`, {
+        .post(`${process.env.REACT_APP_API_URL}/signUp`, {
           mailAddress: `${values.mailAddress}`,
+          userName: `${values.userName}`,
           password: `${values.password}`,
         })
         .then((results) => {
@@ -126,4 +133,4 @@ const Login = withFormik<FormProps, FormValues>({
   },
 })(InnerForm)
 
-export default Login
+export default SignUp

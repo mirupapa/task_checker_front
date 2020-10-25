@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import Table from './Common/Table'
+import Table from './UI/Table'
+import { Button, Paper, Typography } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
 
 type columnsInfo = {
   title: string
@@ -16,8 +18,30 @@ export type TaskInfo = {
   records: recordsInfo[]
 }
 
+const useStyles = makeStyles({
+  parent: {
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  typo: {
+    position: 'fixed',
+    top: 10,
+    left: 20,
+    fontSize: 23,
+  },
+  logoutButton: {
+    position: 'fixed',
+    top: 10,
+    right: 10,
+  },
+})
+
 const Main = () => {
   const [tasks, setTasks] = useState<TaskInfo>()
+  const classes = useStyles()
 
   useEffect(() => {
     const instance = axios.create({
@@ -47,9 +71,21 @@ const Main = () => {
 
   if (tasks == null) return null
   return (
-    <div>
+    <Paper className={classes.parent}>
+      <Typography align="center" className={classes.typo}>
+        TASK CHECKER
+      </Typography>
       <Table columns={tasks.columns} records={tasks.records} />
-    </div>
+      <Button
+        className={classes.logoutButton}
+        variant="contained"
+        color="primary"
+        onClick={() => localStorage.removeItem('task_checker_token')}
+        href="/login"
+      >
+        Logout
+      </Button>
+    </Paper>
   )
 }
 
