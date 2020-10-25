@@ -9,14 +9,12 @@ const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/login">
-          <Login />
-        </Route>
+        <Route path="/login" component={Login} />
+        <Route path="/signUp" component={SignUp} />
         <Auth>
           <Route path="/" exact>
             <Main />
           </Route>
-          <Route path="/signUp" component={SignUp} />
         </Auth>
       </Switch>
     </BrowserRouter>

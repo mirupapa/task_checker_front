@@ -1,5 +1,12 @@
 import React from 'react'
-import { TextField, Button, Paper, Grid, Typography } from '@material-ui/core'
+import {
+  TextField,
+  Button,
+  Paper,
+  Grid,
+  Typography,
+  Box,
+} from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import axios from 'axios'
 import { InjectedFormikProps, withFormik } from 'formik'
@@ -30,6 +37,9 @@ const useStyles = makeStyles((theme: Theme) =>
       top: 10,
       right: 10,
     },
+    error: {
+      color: 'red',
+    },
   })
 )
 
@@ -54,30 +64,34 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
           TASK CHECKER
         </Typography>
         <Grid container justify="center">
-          <TextField
-            id="mailAddress"
-            label="mailAddress"
-            required
-            value={props.values.mailAddress}
-            onChange={props.handleChange}
-            className={classes.input}
-          />
-          {props.touched.mailAddress && props.errors.mailAddress && (
-            <div>{props.errors.mailAddress}</div>
-          )}
-          <TextField
-            id="password"
-            label="Password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={props.values.password}
-            onChange={props.handleChange}
-            className={classes.input}
-          />
-          {props.touched.password && props.errors.password && (
-            <div>{props.errors.password}</div>
-          )}
+          <Box>
+            <TextField
+              id="mailAddress"
+              label="mailAddress"
+              required
+              value={props.values.mailAddress}
+              onChange={props.handleChange}
+              className={classes.input}
+            />
+            {props.touched.mailAddress && props.errors.mailAddress && (
+              <span className={classes.error}>{props.errors.mailAddress}</span>
+            )}
+          </Box>
+          <Box>
+            <TextField
+              id="password"
+              label="Password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={props.values.password}
+              onChange={props.handleChange}
+              className={classes.input}
+            />
+            {props.touched.password && props.errors.password && (
+              <span className={classes.error}>{props.errors.password}</span>
+            )}
+          </Box>
           <Button
             variant="contained"
             color="primary"
