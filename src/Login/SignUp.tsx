@@ -25,10 +25,13 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '12vh',
       lineHeight: '12vh',
     },
-    signUpButton: {
+    loginButton: {
+      height: 36,
+    },
+    backButton: {
       position: 'fixed',
       top: 10,
-      right: 10,
+      left: 10,
     },
   })
 )
@@ -92,6 +95,7 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
             <div>{props.errors.password}</div>
           )}
           <Button
+            className={classes.loginButton}
             variant="contained"
             color="primary"
             type="submit"
@@ -101,6 +105,14 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
           </Button>
         </Grid>
       </Paper>
+      <Button
+        className={classes.backButton}
+        variant="contained"
+        color="secondary"
+        href="/login"
+      >
+        BACK
+      </Button>
     </form>
   )
 }

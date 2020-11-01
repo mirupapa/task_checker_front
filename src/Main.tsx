@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Table from './UI/Table'
-import { Button, Paper, Typography } from '@material-ui/core'
+import { Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
 type columnsInfo = {
@@ -25,17 +25,6 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  typo: {
-    position: 'fixed',
-    top: 10,
-    left: 20,
-    fontSize: 23,
-  },
-  logoutButton: {
-    position: 'fixed',
-    top: 10,
-    right: 10,
   },
 })
 
@@ -72,19 +61,7 @@ const Main = () => {
   if (tasks == null) return null
   return (
     <Paper className={classes.parent}>
-      <Typography align="center" className={classes.typo}>
-        TASK CHECKER
-      </Typography>
       <Table columns={tasks.columns} records={tasks.records} />
-      <Button
-        className={classes.logoutButton}
-        variant="contained"
-        color="primary"
-        onClick={() => localStorage.removeItem('task_checker_token')}
-        href="/login"
-      >
-        Logout
-      </Button>
     </Paper>
   )
 }
