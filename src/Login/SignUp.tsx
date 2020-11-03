@@ -1,7 +1,6 @@
 import React from 'react'
 import { TextField, Button, Paper, Grid, Typography } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import axios from 'axios'
 import { InjectedFormikProps, withFormik } from 'formik'
 import * as Yup from 'yup'
 
@@ -126,15 +125,30 @@ const SignUp = withFormik<FormProps, FormValues>({
   }),
   handleSubmit: (values, { setSubmitting }) => {
     setTimeout(() => {
-      return axios
-        .post(`${process.env.REACT_APP_API_URL}/signUp`, {
+      return fetch(`${process.env.REACT_APP_API_URL}/signUp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           mailAddress: `${values.mailAddress}`,
           userName: `${values.userName}`,
           password: `${values.password}`,
+        }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`${res.status} ${res.statusText}`)
+          }
+          return res.blob()
         })
-        .then((results) => {
+        .then((res) => {
+          return res.text()
+        })
+        .then((res) => {
           setSubmitting(false)
-          localStorage.setItem('task_checker_token', results.data)
+          console.log(res)
+          localStorage.setItem('task_checker_token', res)
           window.location.href = '/'
         })
         .catch((error) => {

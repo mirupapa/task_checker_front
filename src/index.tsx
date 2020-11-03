@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { ReactQueryConfig, ReactQueryConfigProvider } from 'react-query'
+import { ReactQueryDevtools } from 'react-query-devtools'
 import { Provider } from 'react-redux'
 import rootReducer from './RootReducer'
 import App from './App'
@@ -41,10 +43,25 @@ const store = configureStore({
 
 const persistor = persistStore(store)
 
+const queryConfig: ReactQueryConfig = {
+  shared: {
+    suspense: true,
+  },
+  queries: {
+    retry: 0,
+    useErrorBoundary: true,
+  },
+}
+
 ReactDOM.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <App />
+      <ReactQueryConfigProvider config={queryConfig}>
+        <App />
+        {process.env.NODE_ENV === 'development' && (
+          <ReactQueryDevtools initialIsOpen={false} />
+        )}
+      </ReactQueryConfigProvider>
     </PersistGate>
   </Provider>,
   document.getElementById('root')

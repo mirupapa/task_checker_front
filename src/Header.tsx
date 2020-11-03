@@ -37,8 +37,6 @@ const Header: React.FC = () => {
     UserInfoState,
     UserInfoState['UserInfo']['UserName']
   >((state) => {
-    console.log('state:', state)
-    console.log('useInfo:', state.UserInfo)
     return state.UserInfo.UserName
   })
   return (

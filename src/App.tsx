@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import Login from 'Login/Login'
-import Main from './Main'
+import Task from './Task/Task'
 import Auth from './Login/Auth'
 import SignUp from './Login/SignUp'
 import Header from './Header'
@@ -14,9 +14,7 @@ const App: React.FC = () => {
         <Route path="/signUp" component={SignUp} />
         <Auth>
           <Header />
-          <Route path="/" exact>
-            <Main />
-          </Route>
+          <Route path="/" component={Task} exact />
         </Auth>
       </Switch>
     </BrowserRouter>

@@ -2,7 +2,7 @@ import { combineReducers } from '@reduxjs/toolkit'
 import UserInfo from './Slice/UserInfo'
 
 const rootReducer = combineReducers({
-  UserInfo: UserInfo
+  UserInfo: UserInfo,
 })
 
 export default rootReducer
