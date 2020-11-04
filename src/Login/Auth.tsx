@@ -1,30 +1,45 @@
 import React, { useState } from 'react'
-import axios from 'axios'
+import { setUserInfo } from '../Slice/UserInfo'
+import { useDispatch } from 'react-redux'
+import { kyApi } from '../API/kyAPI'
+import { makeStyles } from '@material-ui/core/styles'
+import { Paper, CircularProgress } from '@material-ui/core'
+
+const useStyles = makeStyles({
+  parent: {
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+})
 
 // 承認処理
 const Auth = (props: { children: any }) => {
-  const [auth, setAuth] = useState<boolean>()
+  const [auth, setAuth] = useState<boolean>(false)
+  const dispatch = useDispatch()
+  const classes = useStyles()
+
   const checkAuth = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/auth`
-    return axios({
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('task_checker_token')}`,
-      },
-      url,
-    })
-      .then((results) => {
-        console.log(results.data)
-        setAuth(true)
-      })
-      .catch((error) => {
-        window.alert(error)
-        window.location.href = '/login'
-      })
+    const response = await kyApi('/auth')
+    if (response.MailAddress == null) {
+      window.alert('アクセル不可')
+      window.location.href = '/login'
+    } else {
+      setAuth(true)
+      dispatch(setUserInfo(response))
+    }
   }
 
   checkAuth()
-  return auth != null ? props.children : <div>Loading...</div>
+  return auth ? (
+    props.children
+  ) : (
+    <Paper className={classes.parent}>
+      <CircularProgress color="inherit" />
+    </Paper>
+  )
 }
 
 export default Auth

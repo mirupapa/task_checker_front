@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC, useState, useRef } from 'react'
 import {
   TextField,
   Button,
@@ -8,9 +8,6 @@ import {
   Box,
 } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import axios from 'axios'
-import { InjectedFormikProps, withFormik } from 'formik'
-import * as Yup from 'yup'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,6 +29,9 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '12vh',
       lineHeight: '12vh',
     },
+    loginButton: {
+      height: 36,
+    },
     signUpButton: {
       position: 'fixed',
       top: 10,
@@ -43,22 +43,43 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-type FormValues = {
-  mailAddress: string
-  password: string
-}
-
-type FormProps = {
-  mailAddress?: string
-  password?: string
-}
-
-const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
-  props
-) => {
+const Login: FC = () => {
   const classes = useStyles()
+  const [isSubmitting, setSubmitting] = useState(false)
+  const mailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
+
+  const submit = () => {
+    return fetch(`${process.env.REACT_APP_API_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        mailAddress: mailRef.current?.value,
+        password: passwordRef.current?.value,
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`${res.status} ${res.statusText}`)
+        }
+        return res.json()
+      })
+      .then((res) => {
+        setSubmitting(false)
+        console.log(res)
+        localStorage.setItem('task_checker_token', res.Token)
+        window.location.href = '/'
+      })
+      .catch((error) => {
+        setSubmitting(false)
+        window.alert(error)
+      })
+  }
+
   return (
-    <form onSubmit={props.handleSubmit} className={classes.root}>
+    <form onSubmit={submit} className={classes.root}>
       <Paper className={classes.paper}>
         <Typography align="center" className={classes.typo}>
           TASK CHECKER
@@ -69,13 +90,9 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
               id="mailAddress"
               label="mailAddress"
               required
-              value={props.values.mailAddress}
-              onChange={props.handleChange}
+              inputRef={mailRef}
               className={classes.input}
             />
-            {props.touched.mailAddress && props.errors.mailAddress && (
-              <span className={classes.error}>{props.errors.mailAddress}</span>
-            )}
           </Box>
           <Box>
             <TextField
@@ -84,19 +101,17 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
               type="password"
               autoComplete="current-password"
               required
-              value={props.values.password}
-              onChange={props.handleChange}
+              inputRef={passwordRef}
               className={classes.input}
             />
-            {props.touched.password && props.errors.password && (
-              <span className={classes.error}>{props.errors.password}</span>
-            )}
           </Box>
           <Button
             variant="contained"
             color="primary"
-            type="submit"
-            disabled={props.isSubmitting}
+            type="button"
+            className={classes.loginButton}
+            disabled={isSubmitting}
+            onClick={() => submit()}
           >
             LOGIN
           </Button>
@@ -113,31 +128,5 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
     </form>
   )
 }
-
-const Login = withFormik<FormProps, FormValues>({
-  mapPropsToValues: () => ({ mailAddress: '', password: '' }),
-  validationSchema: Yup.object().shape({
-    mailAddress: Yup.string().required('required mailAddress'),
-    password: Yup.string().required('required password'),
-  }),
-  handleSubmit: (values, { setSubmitting }) => {
-    setTimeout(() => {
-      return axios
-        .post(`${process.env.REACT_APP_API_URL}/login`, {
-          mailAddress: `${values.mailAddress}`,
-          password: `${values.password}`,
-        })
-        .then((results) => {
-          setSubmitting(false)
-          localStorage.setItem('task_checker_token', results.data)
-          window.location.href = '/'
-        })
-        .catch((error) => {
-          setSubmitting(false)
-          window.alert(error)
-        })
-    }, 1000)
-  },
-})(InnerForm)
 
 export default Login

@@ -7,7 +7,6 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
-import { TaskInfo } from '../Main'
 
 const useStyles = makeStyles({
   container: {
@@ -19,10 +18,7 @@ const useStyles = makeStyles({
   },
 })
 
-const SimpleTable: React.FunctionComponent<TaskInfo> = ({
-  columns,
-  records,
-}) => {
+const SimpleTable: React.FunctionComponent = () => {
   const classes = useStyles()
 
   return (
@@ -30,20 +26,13 @@ const SimpleTable: React.FunctionComponent<TaskInfo> = ({
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            {columns.map((item) => {
-              return <TableCell key={item.field}>{item.title}</TableCell>
-            })}
+            <TableCell>test</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {records.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell component="th" scope="row">
-                {item.id}
-              </TableCell>
-              <TableCell>{item.title}</TableCell>
-            </TableRow>
-          ))}
+          <TableRow>
+            <TableCell>test1</TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </TableContainer>

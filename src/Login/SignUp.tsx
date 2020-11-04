@@ -1,7 +1,6 @@
 import React from 'react'
 import { TextField, Button, Paper, Grid, Typography } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import axios from 'axios'
 import { InjectedFormikProps, withFormik } from 'formik'
 import * as Yup from 'yup'
 
@@ -25,10 +24,13 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '12vh',
       lineHeight: '12vh',
     },
-    signUpButton: {
+    loginButton: {
+      height: 36,
+    },
+    backButton: {
       position: 'fixed',
       top: 10,
-      right: 10,
+      left: 10,
     },
   })
 )
@@ -92,6 +94,7 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
             <div>{props.errors.password}</div>
           )}
           <Button
+            className={classes.loginButton}
             variant="contained"
             color="primary"
             type="submit"
@@ -101,6 +104,14 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
           </Button>
         </Grid>
       </Paper>
+      <Button
+        className={classes.backButton}
+        variant="contained"
+        color="secondary"
+        href="/login"
+      >
+        BACK
+      </Button>
     </form>
   )
 }
@@ -114,15 +125,30 @@ const SignUp = withFormik<FormProps, FormValues>({
   }),
   handleSubmit: (values, { setSubmitting }) => {
     setTimeout(() => {
-      return axios
-        .post(`${process.env.REACT_APP_API_URL}/signUp`, {
+      return fetch(`${process.env.REACT_APP_API_URL}/signUp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           mailAddress: `${values.mailAddress}`,
           userName: `${values.userName}`,
           password: `${values.password}`,
+        }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`${res.status} ${res.statusText}`)
+          }
+          return res.blob()
         })
-        .then((results) => {
+        .then((res) => {
+          return res.text()
+        })
+        .then((res) => {
           setSubmitting(false)
-          localStorage.setItem('task_checker_token', results.data)
+          console.log(res)
+          localStorage.setItem('task_checker_token', res)
           window.location.href = '/'
         })
         .catch((error) => {
