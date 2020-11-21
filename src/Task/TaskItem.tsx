@@ -11,6 +11,7 @@ import {
   ListItemSecondaryAction,
   IconButton,
 } from '@material-ui/core'
+import DragHandleIcon from '@material-ui/icons/DragHandle'
 import { makeStyles } from '@material-ui/core/styles'
 import { kyApi } from '../API/kyAPI'
 import { useQuery } from 'react-query'
@@ -147,6 +148,10 @@ const TaskItem = (props: {
     return (
       <ListItem role={undefined} dense button>
         <ListItemIcon>
+          <DragHandleIcon
+            style={{ margin: 'auto 10px auto 0' }}
+            className="drag-handle"
+          />
           <Checkbox
             edge="start"
             checked={props.task.done}
