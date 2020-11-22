@@ -33,7 +33,8 @@
     "react-smooth-dnd": "^0.11.1",
     "redux-persist": "^6.0.0",
     "typescript": "4.0.2",
-    "yup": "^0.29.3"
+    "yup": "^0.29.3",
+    "typesync": "^0.7.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -75,8 +76,7 @@
     "eslint-plugin-react-hooks": "^4.1.2",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
-    "prettier": "^2.1.2",
-    "typesync": "^0.7.0"
+    "prettier": "^2.1.2"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
