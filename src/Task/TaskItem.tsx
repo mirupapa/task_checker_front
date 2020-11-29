@@ -14,7 +14,7 @@ import {
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import { makeStyles } from '@material-ui/core/styles'
 import { kyApi } from '../API/kyAPI'
-import { useQuery } from 'react-query'
+// import { useQuery } from 'react-query'
 import { TaskType } from './TaskList'
 import { RefetchOptions } from 'react-query/types/core/query'
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -49,25 +49,20 @@ const TaskItem = (props: {
   setIsCreate: Dispatch<SetStateAction<boolean>>
 }) => {
   const classes = useStyles()
-  const [title, setTitle] = useState<string>(props.task.title)
-
-  const url = '/task'
-  const { data, refetch } = useQuery(url, kyApi)
-
-  if (!Array.isArray(data)) {
-    window.location.href = '/login'
-  }
+  const [title, setTitle] = useState<string | null>(props.task.title)
+  const [done, setDone] = useState<boolean>(props.task.done)
 
   const doneToggle = async (task: TaskType) => {
     const json = {
       id: task.id,
-      done: !task.done,
+      done: !done,
     }
     const result = await kyApi('/task/done', 'PUT', json)
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    refetch()
+    setDone(!done)
+    props.refetch()
   }
 
   const putTask = async () => {
@@ -94,8 +89,9 @@ const TaskItem = (props: {
     }
     props.refetch()
     props.setIsEditingId(undefined)
+    setTitle(null)
   }
-
+  if (title === null) return null
   if (props.isEditingId === props.task.id) {
     return (
       <ListItem role={undefined} dense button>
@@ -104,7 +100,7 @@ const TaskItem = (props: {
             <ListItemIcon>
               <Checkbox
                 edge="start"
-                checked={props.task.done}
+                checked={done}
                 tabIndex={-1}
                 disableRipple
                 onClick={() => doneToggle(props.task)}
@@ -154,7 +150,7 @@ const TaskItem = (props: {
           />
           <Checkbox
             edge="start"
-            checked={props.task.done}
+            checked={done}
             tabIndex={-1}
             disableRipple
             onClick={() => doneToggle(props.task)}

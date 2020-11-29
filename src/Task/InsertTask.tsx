@@ -47,7 +47,7 @@ const InsertTask = (props: {
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    props.refetch()
+    await props.refetch()
     props.setIsCreate(false)
   }
 

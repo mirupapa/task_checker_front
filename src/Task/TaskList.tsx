@@ -40,7 +40,6 @@ const TaskList = (props: {
   const classes = useStyles()
   const url = '/task'
   const { data, refetch } = useQuery(url, kyApi)
-  const [tasks, setTasks] = React.useState<Array<TaskType>>(data)
 
   if (!Array.isArray(data)) {
     window.location.href = '/login'
@@ -62,7 +61,6 @@ const TaskList = (props: {
       removedIndex || 0,
       addedIndex || 0
     )
-    setTasks(newTasks)
     upSortTask(newTasks)
   }
 
@@ -74,7 +72,7 @@ const TaskList = (props: {
           lockAxis="y"
           onDrop={onDrop}
         >
-          {tasks.map((task: TaskType) => {
+          {data.map((task: TaskType) => {
             return (
               <Draggable key={task.id}>
                 <TaskItem task={task} {...props} refetch={refetch} />
