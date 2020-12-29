@@ -1,14 +1,14 @@
 steps:
   - name: 'gcr.io/cloud-builders/gcloud'
-  args: [
-    'kms',
-    'decrypt',
-    '--location=global',
-    '--keyring=${_KMS_KEYRING}',
-    '--key=${_KMS_KEY}',
-    '--ciphertext-file=.env.enc',
-    '--plaintext-file=.env'
-  ]
+    args: [
+      'kms',
+      'decrypt',
+      '--location=global',
+      '--keyring=${_KMS_KEYRING}',
+      '--key=${_KMS_KEY}',
+      '--ciphertext-file=.env.enc',
+      '--plaintext-file=.env'
+    ]
   - name: 'node'
     entrypoint: 'yarn'
     args: ['install']
