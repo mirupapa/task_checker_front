@@ -9,3 +9,9 @@ steps:
   
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['app', 'deploy', 'app.yaml']
+    args:
+      - app
+      - deploy
+      - app.yaml
+      - --set-env-vars=REACT_APP_API_URL=${_REACT_APP_API_URL}
+      
