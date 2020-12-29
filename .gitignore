@@ -24,3 +24,4 @@ yarn-error.log*
 
 memo.md
 .env
+.env.prov
