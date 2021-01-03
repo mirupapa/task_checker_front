@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useState, useRef } from 'react'
 import {
   ListItemIcon,
   ListItem,
@@ -37,8 +37,12 @@ const InsertTask = (props: {
 }) => {
   const classes = useStyles()
   const [title, setTitle] = useState<string>('')
+  const addButtonRef = useRef<HTMLButtonElement>(null)
 
   const addTask = async () => {
+    if (addButtonRef.current) {
+      addButtonRef.current.disabled = true
+    }
     const json = {
       title: title,
       sort: props.records.length + 1,
@@ -74,8 +78,14 @@ const InsertTask = (props: {
               size="small"
               color="secondary"
               className={classes.okButton}
-              onClick={() => addTask()}
+              onClick={() => {
+                console.log(addButtonRef.current?.disabled)
+                if (!addButtonRef.current?.disabled) {
+                  addTask()
+                }
+              }}
               disabled={title === ''}
+              ref={addButtonRef}
             >
               ADD
             </Button>
