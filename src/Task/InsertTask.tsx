@@ -33,7 +33,7 @@ const InsertTask = (props: {
   isCreate: boolean
   setIsEditingId: Dispatch<SetStateAction<number | undefined>>
   refetch: (options?: RefetchOptions | undefined) => Promise<any>
-  data: Array<TaskType>
+  records: Array<TaskType>
 }) => {
   const classes = useStyles()
   const [title, setTitle] = useState<string>('')
@@ -41,7 +41,7 @@ const InsertTask = (props: {
   const addTask = async () => {
     const json = {
       title: title,
-      sort: props.data.length + 1,
+      sort: props.records.length + 1,
     }
     const result = await kyApi('/task', 'POST', json)
     if (result !== 'success') {
