@@ -49,6 +49,7 @@ const InsertTask = (props: {
     }
     await props.refetch()
     props.setIsCreate(false)
+    setTitle('')
   }
 
   if (props.isCreate) {

@@ -62,7 +62,7 @@ const TaskItem = (props: {
       window.location.href = '/login'
     }
     setDone(!done)
-    props.refetch()
+    // props.refetch()
   }
 
   const putTask = async () => {
@@ -87,7 +87,7 @@ const TaskItem = (props: {
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    props.refetch()
+    // props.refetch()
     props.setIsEditingId(undefined)
     setTitle(null)
   }

@@ -19,8 +19,13 @@ export type TaskType = {
 }
 
 const useStyles = makeStyles({
+  card: {
+    padding: '3px',
+  },
   list: {
     width: 500,
+    maxHeight: 'calc(100vh - 300px)',
+    overflowY: 'auto',
   },
   doneTitle: {
     textDecoration: 'line-through',
@@ -71,7 +76,7 @@ const TaskList = (props: {
   }, [data])
 
   return (
-    <Card onClick={(e) => e.stopPropagation()}>
+    <Card onClick={(e) => e.stopPropagation()} className={classes.card}>
       <List className={classes.list}>
         <Container
           dragHandleSelector=".drag-handle"
@@ -86,8 +91,8 @@ const TaskList = (props: {
             )
           })}
         </Container>
-        <InsertTask {...props} refetch={refetch} data={data} />
       </List>
+      <InsertTask {...props} refetch={refetch} data={data} />
     </Card>
   )
 }
