@@ -24,7 +24,7 @@ const Auth = (props: { children: any }) => {
   const checkAuth = async () => {
     const response = await kyApi('/auth')
     if (response.MailAddress == null) {
-      window.alert('アクセル不可')
+      window.alert('アクセス不可')
       window.location.href = '/login'
     } else {
       setAuth(true)
