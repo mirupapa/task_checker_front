@@ -34,6 +34,7 @@ const InsertTask = (props: {
   setIsEditingId: Dispatch<SetStateAction<number | undefined>>
   refetch: (options?: RefetchOptions | undefined) => Promise<any>
   records: Array<TaskType>
+  setRecords: Dispatch<SetStateAction<Array<TaskType>>>
 }) => {
   const classes = useStyles()
   const [title, setTitle] = useState<string>('')
@@ -51,9 +52,20 @@ const InsertTask = (props: {
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    await props.refetch()
+    const newTempItem = {
+      id: 0,
+      title: title,
+      done: false,
+      del_flag: false,
+      sort: 99,
+      created_at: '',
+      updated_at: '',
+    }
+    const newList = [...props.records, newTempItem]
+    props.setRecords(newList)
     props.setIsCreate(false)
     setTitle('')
+    await props.refetch()
   }
 
   if (props.isCreate) {
