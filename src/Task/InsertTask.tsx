@@ -70,7 +70,9 @@ const InsertTask = (props: {
               size="small"
               onChange={(e) => setTitle(e.target.value)}
               onKeyPress={(e) => {
-                if (e.key === 'Enter') addTask()
+                if (e.key === 'Enter' && !addButtonRef.current?.disabled) {
+                  addTask()
+                }
               }}
             />
             <Button
@@ -79,7 +81,6 @@ const InsertTask = (props: {
               color="secondary"
               className={classes.okButton}
               onClick={() => {
-                console.log(addButtonRef.current?.disabled)
                 if (!addButtonRef.current?.disabled) {
                   addTask()
                 }
