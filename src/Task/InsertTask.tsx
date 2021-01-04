@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useState, useRef } from 'react'
+import React, {
+  Dispatch,
+  SetStateAction,
+  useState,
+  useRef,
+  useEffect,
+} from 'react'
 import {
   ListItemIcon,
   ListItem,
@@ -40,6 +46,20 @@ const InsertTask = (props: {
   const [title, setTitle] = useState<string>('')
   const addButtonRef = useRef<HTMLButtonElement>(null)
 
+  const setList = () => {
+    const newTempItem = {
+      id: 0,
+      title: title,
+      done: false,
+      del_flag: false,
+      sort: 99,
+      created_at: '',
+      updated_at: '',
+    }
+    const newList = [...props.records, newTempItem]
+    props.setRecords(newList)
+  }
+
   const addTask = async () => {
     if (addButtonRef.current) {
       addButtonRef.current.disabled = true
@@ -52,21 +72,14 @@ const InsertTask = (props: {
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    const newTempItem = {
-      id: 0,
-      title: title,
-      done: false,
-      del_flag: false,
-      sort: 99,
-      created_at: '',
-      updated_at: '',
-    }
-    const newList = [...props.records, newTempItem]
-    props.setRecords(newList)
     props.setIsCreate(false)
     setTitle('')
     await props.refetch()
   }
+
+  useEffect(() => {
+    document.getElementById('insertTitle')?.focus()
+  }, [props.isCreate])
 
   if (props.isCreate) {
     return (
@@ -83,6 +96,7 @@ const InsertTask = (props: {
               onChange={(e) => setTitle(e.target.value)}
               onKeyPress={(e) => {
                 if (e.key === 'Enter' && !addButtonRef.current?.disabled) {
+                  setList()
                   addTask()
                 }
               }}
@@ -94,6 +108,7 @@ const InsertTask = (props: {
               className={classes.okButton}
               onClick={() => {
                 if (!addButtonRef.current?.disabled) {
+                  setList()
                   addTask()
                 }
               }}
