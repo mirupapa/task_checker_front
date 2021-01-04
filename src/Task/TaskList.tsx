@@ -92,7 +92,12 @@ const TaskList = (props: {
           })}
         </Container>
       </List>
-      <InsertTask {...props} refetch={refetch} records={records} />
+      <InsertTask
+        {...props}
+        refetch={refetch}
+        records={records}
+        setRecords={setRecords}
+      />
     </Card>
   )
 }
