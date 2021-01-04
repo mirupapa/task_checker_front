@@ -58,6 +58,8 @@ const InsertTask = (props: {
     }
     const newList = [...props.records, newTempItem]
     props.setRecords(newList)
+    props.setIsCreate(false)
+    setTitle('')
   }
 
   const addTask = async () => {
@@ -72,8 +74,6 @@ const InsertTask = (props: {
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    props.setIsCreate(false)
-    setTitle('')
     await props.refetch()
   }
 

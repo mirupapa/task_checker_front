@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useState, useEffect } from 'react'
 import {
   ListItem,
   Checkbox,
@@ -47,12 +47,15 @@ const TaskItem = (props: {
   task: TaskType
   refetch: (options?: RefetchOptions | undefined) => Promise<any>
   setIsCreate: Dispatch<SetStateAction<boolean>>
+  records: Array<TaskType>
+  setRecords: Dispatch<SetStateAction<Array<TaskType>>>
 }) => {
   const classes = useStyles()
   const [title, setTitle] = useState<string | null>(props.task.title)
   const [done, setDone] = useState<boolean>(props.task.done)
 
   const doneToggle = async (task: TaskType) => {
+    setDone(!done)
     const json = {
       id: task.id,
       done: !done,
@@ -61,11 +64,29 @@ const TaskItem = (props: {
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    setDone(!done)
-    // props.refetch()
+    props.refetch()
   }
 
   const putTask = async () => {
+    const renewList: Array<TaskType> = []
+    props.records.forEach((record) => {
+      if (props.isEditingId !== record.id) {
+        renewList.push(record)
+      } else {
+        const updateTask = {
+          id: record.id,
+          title: title!,
+          done: record.done,
+          del_flag: record.del_flag,
+          sort: record.sort,
+          created_at: record.created_at,
+          updated_at: record.updated_at,
+        }
+        renewList.push(updateTask)
+      }
+    })
+    props.setRecords(renewList)
+    props.setIsEditingId(undefined)
     const json = {
       id: props.task.id,
       title: title,
@@ -75,11 +96,11 @@ const TaskItem = (props: {
       window.location.href = '/login'
     }
     props.refetch()
-    props.setIsEditingId(undefined)
   }
 
   const deleteTask = async () => {
-    console.log(111)
+    props.setIsEditingId(undefined)
+    setTitle(null)
     const json = {
       id: props.task.id,
     }
@@ -87,10 +108,15 @@ const TaskItem = (props: {
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    // props.refetch()
-    props.setIsEditingId(undefined)
-    setTitle(null)
+    props.refetch()
   }
+
+  useEffect(() => {
+    if (props.isEditingId === props.task.id) {
+      document.getElementById('updateTitle')?.focus()
+    }
+  }, [props.isEditingId])
+
   if (title === null) return null
   if (props.isEditingId === props.task.id) {
     return (
@@ -107,7 +133,7 @@ const TaskItem = (props: {
               />
             </ListItemIcon>
             <TextField
-              id="insertTitle"
+              id="updateTitle"
               label="title"
               variant="outlined"
               className={classes.inputField}

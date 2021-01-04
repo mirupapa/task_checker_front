@@ -86,7 +86,13 @@ const TaskList = (props: {
           {records.map((task: TaskType) => {
             return (
               <Draggable key={task.id}>
-                <TaskItem task={task} {...props} refetch={refetch} />
+                <TaskItem
+                  {...props}
+                  task={task}
+                  records={records}
+                  setRecords={setRecords}
+                  refetch={refetch}
+                />
               </Draggable>
             )
           })}
