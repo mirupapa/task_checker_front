@@ -1,10 +1,4 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useState,
-  useRef,
-  useEffect,
-} from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   ListItemIcon,
   ListItem,
@@ -15,9 +9,8 @@ import {
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
-import { kyApi } from '../API/kyAPI'
-import { RefetchOptions } from 'react-query/types/core/query'
-import { TaskType } from './TaskList'
+import { InsertTaskType, TaskType } from './TaskType'
+import kyApi from '../API/kyAPI'
 
 const useStyles = makeStyles({
   addButton: {
@@ -34,31 +27,33 @@ const useStyles = makeStyles({
   },
 })
 
-const InsertTask = (props: {
-  setIsCreate: Dispatch<SetStateAction<boolean>>
-  isCreate: boolean
-  setIsEditingId: Dispatch<SetStateAction<number | undefined>>
-  refetch: (options?: RefetchOptions | undefined) => Promise<any>
-  records: Array<TaskType>
-  setRecords: Dispatch<SetStateAction<Array<TaskType>>>
-}) => {
+const InsertTask = (props: InsertTaskType): JSX.Element => {
+  const {
+    setRecords,
+    setIsCreate,
+    isCreate,
+    records,
+    refetch,
+    setIsEditingId,
+  } = props
   const classes = useStyles()
   const [title, setTitle] = useState<string>('')
   const addButtonRef = useRef<HTMLButtonElement>(null)
+  const insertTitleRef = useRef<HTMLInputElement>(null)
 
   const setList = () => {
-    const newTempItem = {
+    const newTempItem: TaskType = {
       id: 0,
-      title: title,
+      title,
       done: false,
-      del_flag: false,
+      delFlag: false,
       sort: 99,
-      created_at: '',
-      updated_at: '',
+      createdAt: '',
+      updatedAt: '',
     }
-    const newList = [...props.records, newTempItem]
-    props.setRecords(newList)
-    props.setIsCreate(false)
+    const newList = [...records, newTempItem]
+    setRecords(newList)
+    setIsCreate(false)
     setTitle('')
   }
 
@@ -67,21 +62,23 @@ const InsertTask = (props: {
       addButtonRef.current.disabled = true
     }
     const json = {
-      title: title,
-      sort: props.records.length + 1,
+      title,
+      sort: records.length + 1,
     }
     const result = await kyApi('/task', 'POST', json)
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    await props.refetch()
+    await refetch()
   }
 
   useEffect(() => {
-    document.getElementById('insertTitle')?.focus()
-  }, [props.isCreate])
+    if (insertTitleRef.current) {
+      insertTitleRef.current.focus()
+    }
+  }, [isCreate])
 
-  if (props.isCreate) {
+  if (isCreate) {
     return (
       <ListItem role={undefined} dense>
         <Box>
@@ -89,6 +86,7 @@ const InsertTask = (props: {
             <ListItemIcon />
             <TextField
               id="insertTitle"
+              ref={insertTitleRef}
               label="title"
               variant="outlined"
               className={classes.inputField}
@@ -97,7 +95,7 @@ const InsertTask = (props: {
               onKeyPress={(e) => {
                 if (e.key === 'Enter' && !addButtonRef.current?.disabled) {
                   setList()
-                  addTask()
+                  void addTask()
                 }
               }}
             />
@@ -109,7 +107,7 @@ const InsertTask = (props: {
               onClick={() => {
                 if (!addButtonRef.current?.disabled) {
                   setList()
-                  addTask()
+                  void addTask()
                 }
               }}
               disabled={title === ''}
@@ -121,7 +119,7 @@ const InsertTask = (props: {
               variant="contained"
               size="small"
               className={classes.cancelButton}
-              onClick={() => props.setIsCreate(false)}
+              onClick={() => setIsCreate(false)}
             >
               Cancel
             </Button>
@@ -129,23 +127,23 @@ const InsertTask = (props: {
         </Box>
       </ListItem>
     )
-  } else {
-    return (
-      <ListItem
-        role={undefined}
-        dense
-        button
-        onClick={() => {
-          props.setIsEditingId(undefined)
-          props.setIsCreate(true)
-        }}
-      >
-        <ListItemIcon>
-          <AddCircleOutlineIcon className={classes.addButton} />
-        </ListItemIcon>
-      </ListItem>
-    )
   }
+
+  return (
+    <ListItem
+      role={undefined}
+      dense
+      button
+      onClick={() => {
+        setIsEditingId(undefined)
+        setIsCreate(true)
+      }}
+    >
+      <ListItemIcon>
+        <AddCircleOutlineIcon className={classes.addButton} />
+      </ListItemIcon>
+    </ListItem>
+  )
 }
 
 export default InsertTask

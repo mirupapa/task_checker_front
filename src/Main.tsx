@@ -12,8 +12,9 @@ const useStyles = makeStyles({
   },
 })
 
-const Main = () => {
+const Main = (): JSX.Element => {
   const classes = useStyles()
+
   return <Paper className={classes.parent}>Main</Paper>
 }
 

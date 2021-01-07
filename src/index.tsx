@@ -4,10 +4,6 @@ import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 import { ReactQueryConfig, ReactQueryConfigProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import { Provider } from 'react-redux'
-import rootReducer from './RootReducer'
-import App from './App'
-import './index.css'
-import * as serviceWorker from './serviceWorker'
 import {
   persistStore,
   persistReducer,
@@ -20,6 +16,10 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { PersistGate } from 'redux-persist/integration/react'
+import rootReducer from './RootReducer'
+import App from './App'
+import './index.css'
+import * as serviceWorker from './serviceWorker'
 
 const persistConfig = {
   key: 'root',

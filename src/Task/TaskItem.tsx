@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   ListItem,
   Checkbox,
@@ -13,11 +13,9 @@ import {
 } from '@material-ui/core'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import { makeStyles } from '@material-ui/core/styles'
-import { kyApi } from '../API/kyAPI'
-// import { useQuery } from 'react-query'
-import { TaskType } from './TaskList'
-import { RefetchOptions } from 'react-query/types/core/query'
 import DeleteIcon from '@material-ui/icons/Delete'
+import { TaskType, TaskItemType } from './TaskType'
+import kyApi from '../API/kyAPI'
 
 const useStyles = makeStyles({
   list: {
@@ -41,46 +39,40 @@ const useStyles = makeStyles({
   },
 })
 
-const TaskItem = (props: {
-  setIsEditingId: Dispatch<SetStateAction<number | undefined>>
-  isEditingId: number | undefined
-  task: TaskType
-  refetch: (options?: RefetchOptions | undefined) => Promise<any>
-  setIsCreate: Dispatch<SetStateAction<boolean>>
-  records: Array<TaskType>
-  setRecords: Dispatch<SetStateAction<Array<TaskType>>>
-}) => {
+const TaskItem = (props: TaskItemType): JSX.Element => {
+  const { task, refetch, records, isEditingId } = props
   const classes = useStyles()
-  const [title, setTitle] = useState<string | null>(props.task.title)
-  const [done, setDone] = useState<boolean>(props.task.done)
+  const [title, setTitle] = useState<string>(task.title)
+  const [done, setDone] = useState<boolean>(task.done)
+  const updateTitleRef = useRef<HTMLInputElement>(null)
 
-  const doneToggle = async (task: TaskType) => {
+  const doneToggle = async (doneTask: TaskType) => {
     setDone(!done)
     const json = {
-      id: task.id,
+      id: doneTask.id,
       done: !done,
     }
     const result = await kyApi('/task/done', 'PUT', json)
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    props.refetch()
+    void refetch()
   }
 
   const putTask = async () => {
     const renewList: Array<TaskType> = []
-    props.records.forEach((record) => {
+    records.forEach((record) => {
       if (props.isEditingId !== record.id) {
         renewList.push(record)
       } else {
-        const updateTask = {
+        const updateTask: TaskType = {
           id: record.id,
-          title: title!,
+          title,
           done: record.done,
-          del_flag: record.del_flag,
+          delFlag: record.delFlag,
           sort: record.sort,
-          created_at: record.created_at,
-          updated_at: record.updated_at,
+          createdAt: record.createdAt,
+          updatedAt: record.updatedAt,
         }
         renewList.push(updateTask)
       }
@@ -89,18 +81,18 @@ const TaskItem = (props: {
     props.setIsEditingId(undefined)
     const json = {
       id: props.task.id,
-      title: title,
+      title,
     }
     const result = await kyApi('/task', 'PUT', json)
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    props.refetch()
+    void refetch()
   }
 
   const deleteTask = async () => {
     props.setIsEditingId(undefined)
-    setTitle(null)
+    setTitle('')
     const json = {
       id: props.task.id,
     }
@@ -108,17 +100,17 @@ const TaskItem = (props: {
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    props.refetch()
+    void refetch()
   }
 
   useEffect(() => {
-    if (props.isEditingId === props.task.id) {
-      document.getElementById('updateTitle')?.focus()
+    if (isEditingId === task.id && updateTitleRef.current) {
+      updateTitleRef.current.focus()
     }
-  }, [props.isEditingId])
+  }, [isEditingId, task.id])
 
-  if (title === null) return null
-  if (props.isEditingId === props.task.id) {
+  if (title === null) return <></>
+  if (isEditingId === task.id) {
     return (
       <ListItem role={undefined} dense button>
         <Box>
@@ -140,8 +132,9 @@ const TaskItem = (props: {
               size="small"
               onChange={(e) => setTitle(e.target.value)}
               value={title}
+              ref={updateTitleRef}
               onKeyPress={(e) => {
-                if (e.key === 'Enter') putTask()
+                if (e.key === 'Enter') void putTask()
               }}
             />
             <Button
@@ -166,39 +159,39 @@ const TaskItem = (props: {
         </Box>
       </ListItem>
     )
-  } else {
-    return (
-      <ListItem role={undefined} dense button>
-        <ListItemIcon>
-          <DragHandleIcon
-            style={{ margin: 'auto 10px auto 0' }}
-            className="drag-handle"
-          />
-          <Checkbox
-            edge="start"
-            checked={done}
-            tabIndex={-1}
-            disableRipple
-            onClick={() => doneToggle(props.task)}
-          />
-        </ListItemIcon>
-        <ListItemText
-          primary={props.task.title}
-          className={props.task.done ? classes.doneTitle : classes.noDoneTitle}
-          onClick={() => {
-            setTitle(props.task.title)
-            props.setIsCreate(false)
-            props.setIsEditingId(props.task.id)
-          }}
-        />
-        <ListItemSecondaryAction onClick={() => deleteTask()}>
-          <IconButton edge="end" aria-label="delete">
-            <DeleteIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-    )
   }
+
+  return (
+    <ListItem role={undefined} dense button>
+      <ListItemIcon>
+        <DragHandleIcon
+          style={{ margin: 'auto 10px auto 0' }}
+          className="drag-handle"
+        />
+        <Checkbox
+          edge="start"
+          checked={done}
+          tabIndex={-1}
+          disableRipple
+          onClick={() => doneToggle(props.task)}
+        />
+      </ListItemIcon>
+      <ListItemText
+        primary={task.title}
+        className={task.done ? classes.doneTitle : classes.noDoneTitle}
+        onClick={() => {
+          setTitle(props.task.title)
+          props.setIsCreate(false)
+          props.setIsEditingId(props.task.id)
+        }}
+      />
+      <ListItemSecondaryAction onClick={() => deleteTask()}>
+        <IconButton edge="end" aria-label="delete">
+          <DeleteIcon />
+        </IconButton>
+      </ListItemSecondaryAction>
+    </ListItem>
+  )
 }
 
 export default TaskItem

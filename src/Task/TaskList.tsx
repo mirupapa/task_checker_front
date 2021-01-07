@@ -1,22 +1,13 @@
-import React, { Dispatch, SetStateAction, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Container, Draggable, DropResult } from 'react-smooth-dnd'
 import arrayMove from 'array-move'
 import { List, Card } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { kyApi } from '../API/kyAPI'
 import { useQuery } from 'react-query'
 import TaskItem from './TaskItem'
 import InsertTask from './InsertTask'
-
-export type TaskType = {
-  id: number
-  title: string
-  done: boolean
-  del_flag: boolean
-  sort: number
-  created_at: string
-  updated_at: string
-}
+import kyApi from '../API/kyAPI'
+import { TaskType, TaskListType } from './TaskType'
 
 const useStyles = makeStyles({
   card: {
@@ -36,16 +27,14 @@ const useStyles = makeStyles({
   },
 })
 
-const TaskList = (props: {
-  setIsCreate: Dispatch<SetStateAction<boolean>>
-  isCreate: boolean
-  setIsEditingId: Dispatch<SetStateAction<number | undefined>>
-  isEditingId: number | undefined
-}) => {
+const TaskList = (props: TaskListType): JSX.Element => {
+  const { setIsEditingId, isEditingId, isCreate, setIsCreate } = props
   const classes = useStyles()
   const url = '/task'
   const { data, refetch } = useQuery(url, kyApi)
-  const [records, setRecords] = useState<Array<TaskType>>(data)
+  const [records, setRecords] = useState<Array<TaskType>>(
+    data as Array<TaskType>
+  )
 
   if (!Array.isArray(data)) {
     window.location.href = '/login'
@@ -56,23 +45,23 @@ const TaskList = (props: {
     if (result !== 'success') {
       window.location.href = '/login'
     }
-    refetch()
-    props.setIsEditingId(undefined)
+    void refetch()
+    setIsEditingId(undefined)
   }
 
   const onDrop = (dropResult: DropResult) => {
     const { removedIndex, addedIndex } = dropResult
     const newTasks: Array<TaskType> = arrayMove(
-      data,
+      data as Array<TaskType>,
       removedIndex || 0,
       addedIndex || 0
     )
     setRecords(newTasks)
-    upSortTask(newTasks)
+    void upSortTask(newTasks)
   }
 
   useEffect(() => {
-    setRecords(data)
+    setRecords(data as Array<TaskType>)
   }, [data])
 
   return (
@@ -87,7 +76,9 @@ const TaskList = (props: {
             return (
               <Draggable key={task.id}>
                 <TaskItem
-                  {...props}
+                  setIsEditingId={setIsEditingId}
+                  isEditingId={isEditingId}
+                  setIsCreate={setIsCreate}
                   task={task}
                   records={records}
                   setRecords={setRecords}
@@ -99,7 +90,9 @@ const TaskList = (props: {
         </Container>
       </List>
       <InsertTask
-        {...props}
+        isCreate={isCreate}
+        setIsEditingId={setIsEditingId}
+        setIsCreate={setIsCreate}
         refetch={refetch}
         records={records}
         setRecords={setRecords}

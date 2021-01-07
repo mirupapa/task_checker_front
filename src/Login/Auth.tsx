@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
-import { setUserInfo } from '../Slice/UserInfo'
+import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { kyApi } from '../API/kyAPI'
 import { makeStyles } from '@material-ui/core/styles'
 import { Paper, CircularProgress } from '@material-ui/core'
+import { setUserInfo } from '../Slice/UserInfo'
+import kyApi from '../API/kyAPI'
+import { UserType } from './LoginType'
 
 const useStyles = makeStyles({
   parent: {
@@ -16,25 +17,30 @@ const useStyles = makeStyles({
 })
 
 // 承認処理
-const Auth = (props: { children: any }) => {
+const Auth = (props: { children: unknown }): JSX.Element => {
+  const { children } = props
   const [auth, setAuth] = useState<boolean>(false)
   const dispatch = useDispatch()
   const classes = useStyles()
 
   const checkAuth = async () => {
     const response = await kyApi('/auth')
-    if (response.MailAddress == null) {
-      window.alert('アクセス不可')
+    if ((response as UserType).MailAddress == null) {
       window.location.href = '/login'
-    } else {
-      setAuth(true)
-      dispatch(setUserInfo(response))
     }
+    setAuth(true)
+    dispatch(setUserInfo(response as UserType))
+
+    return response
   }
 
-  checkAuth()
+  useEffect(() => {
+    void checkAuth()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return auth ? (
-    props.children
+    (children as JSX.Element)
   ) : (
     <Paper className={classes.parent}>
       <CircularProgress color="inherit" />

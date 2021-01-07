@@ -8,6 +8,7 @@ import {
   Box,
 } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { TokenType } from './LoginType'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,31 +51,34 @@ const Login: FC = () => {
   const passwordRef = useRef<HTMLInputElement>(null)
 
   const submit = () => {
-    return fetch(`${process.env.REACT_APP_API_URL}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        mailAddress: mailRef.current?.value,
-        password: passwordRef.current?.value,
-      }),
-    })
+    return fetch(
+      `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/login`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mailAddress: mailRef.current?.value,
+          password: passwordRef.current?.value,
+        }),
+      }
+    )
       .then((res) => {
         if (!res.ok) {
           throw new Error(`${res.status} ${res.statusText}`)
         }
+
         return res.json()
       })
       .then((res) => {
         setSubmitting(false)
-        console.log(res)
-        localStorage.setItem('task_checker_token', res.Token)
+        localStorage.setItem('task_checker_token', (res as TokenType).Token)
         window.location.href = '/'
       })
       .catch((error) => {
         setSubmitting(false)
-        window.alert(error)
+        throw error
       })
   }
 

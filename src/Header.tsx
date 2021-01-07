@@ -1,13 +1,11 @@
-import React, { useState } from 'react'
-import { AppBar } from '@material-ui/core'
+import React, { useState, useEffect } from 'react'
+import { AppBar, Button, Typography, Menu, MenuItem } from '@material-ui/core'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
-import { Button, Typography } from '@material-ui/core'
 import grey from '@material-ui/core/colors/grey'
 import AccountCircleIcon from '@material-ui/icons/AccountCircle'
 import { UserInfoState } from './Slice/UserInfo'
-import { Menu, MenuItem } from '@material-ui/core'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,12 +31,15 @@ const useStyles = makeStyles((theme: Theme) =>
 const Header: React.FC = () => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState<Element>()
-  const userName = useSelector<
-    UserInfoState,
-    UserInfoState['UserInfo']['UserName']
-  >((state) => {
-    return state.UserInfo.UserName
-  })
+  const [userName, setUserName] = useState<string>('')
+  const userInfo = useSelector<UserInfoState>((state) => state.UserInfo)
+
+  useEffect(() => {
+    if (userInfo) {
+      setUserName((userInfo as UserInfoState['UserInfo']).UserName)
+    }
+  }, [userInfo])
+
   return (
     <AppBar position="fixed" className={classes.bar}>
       <Typography align="center" className={classes.typo}>
