@@ -32,6 +32,10 @@ const useStyles = makeStyles((theme: Theme) =>
       top: 10,
       left: 10,
     },
+    error: {
+      color: 'red',
+      fontSize: '12px',
+    },
   })
 )
 
@@ -60,37 +64,47 @@ const InnerForm = (props: FormikHandlers & FormikProps<FormValues>) => {
           SIGN UP
         </Typography>
         <Grid container justify="center">
-          <TextField
-            id="mailAddress"
-            label="mailAddress"
-            required
-            value={values.mailAddress}
-            className={classes.input}
-            onChange={handleChange}
-          />
-          {touched.mailAddress && errors.mailAddress && (
-            <div>{errors.mailAddress}</div>
-          )}
-          <TextField
-            id="userName"
-            label="userName"
-            required
-            value={values.userName}
-            className={classes.input}
-            onChange={handleChange}
-          />
-          {touched.userName && errors.userName && <div>{errors.userName}</div>}
-          <TextField
-            id="password"
-            label="Password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={values.password}
-            className={classes.input}
-            onChange={handleChange}
-          />
-          {touched.password && errors.password && <div>{errors.password}</div>}
+          <div>
+            <TextField
+              id="mailAddress"
+              label="mailAddress"
+              required
+              value={values.mailAddress}
+              className={classes.input}
+              onChange={handleChange}
+            />
+            {touched.mailAddress && errors.mailAddress && (
+              <div className={classes.error}>{errors.mailAddress}</div>
+            )}
+          </div>
+          <div>
+            <TextField
+              id="userName"
+              label="userName"
+              required
+              value={values.userName}
+              className={classes.input}
+              onChange={handleChange}
+            />
+            {touched.userName && errors.userName && (
+              <div className={classes.error}>{errors.userName}</div>
+            )}
+          </div>
+          <div>
+            <TextField
+              id="password"
+              label="Password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={values.password}
+              className={classes.input}
+              onChange={handleChange}
+            />
+            {touched.password && errors.password && (
+              <div className={classes.error}>{errors.password}</div>
+            )}
+          </div>
           <Button
             className={classes.loginButton}
             variant="contained"
@@ -164,9 +178,15 @@ const createAccount = (
 const SignUp = withFormik<SignUpFormProps, FormValues>({
   mapPropsToValues: () => ({ mailAddress: '', userName: '', password: '' }),
   validationSchema: Yup.object().shape({
-    mailAddress: Yup.string().required('required mailAddress'),
-    userName: Yup.string().required('required userName'),
-    password: Yup.string().required('required password'),
+    mailAddress: Yup.string()
+      .required('必須です')
+      .email('メール形式のみ可能です'),
+    userName: Yup.string()
+      .required('必須です')
+      .matches(/^[a-zA-Z0-9]+$/, { message: '英数字のみ可能です' }),
+    password: Yup.string()
+      .required('必須です')
+      .matches(/^[a-zA-Z0-9]+$/, { message: '英数字のみ可能です' }),
   }),
   handleSubmit: (values, { setSubmitting }) => {
     createAccount(values, setSubmitting)
