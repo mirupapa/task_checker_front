@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react'
+import React, { Suspense, useState, FC } from 'react'
 import { Paper, CircularProgress } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import TaskList from './TaskList'
@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 })
 
-const Task = () => {
+const Task: FC = () => {
   const classes = useStyles()
   const [isCreate, setIsCreate] = useState(false)
   const [isEditingId, setIsEditingId] = useState<number | undefined>()

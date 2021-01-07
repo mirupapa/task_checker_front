@@ -1,7 +1,7 @@
 import React from 'react'
 import { TextField, Button, Paper, Grid, Typography } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { InjectedFormikProps, withFormik } from 'formik'
+import { FormikHandlers, FormikProps, withFormik } from 'formik'
 import * as Yup from 'yup'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -41,18 +41,20 @@ type FormValues = {
   password: string
 }
 
-type FormProps = {
-  mailAddress?: string
-  userName?: string
-  password?: string
-}
-
-const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
-  props
-) => {
+const InnerForm = (props: FormikHandlers & FormikProps<FormValues>) => {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const {
+    touched,
+    errors,
+    isSubmitting,
+    values,
+    handleSubmit,
+    handleChange,
+  } = props
   const classes = useStyles()
+
   return (
-    <form onSubmit={props.handleSubmit} className={classes.root}>
+    <form className={classes.root} onSubmit={handleSubmit}>
       <Paper className={classes.paper}>
         <Typography align="center" className={classes.typo}>
           SIGN UP
@@ -62,43 +64,39 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
             id="mailAddress"
             label="mailAddress"
             required
-            value={props.values.mailAddress}
-            onChange={props.handleChange}
+            value={values.mailAddress}
             className={classes.input}
+            onChange={handleChange}
           />
-          {props.touched.mailAddress && props.errors.mailAddress && (
-            <div>{props.errors.mailAddress}</div>
+          {touched.mailAddress && errors.mailAddress && (
+            <div>{errors.mailAddress}</div>
           )}
           <TextField
             id="userName"
             label="userName"
             required
-            value={props.values.userName}
-            onChange={props.handleChange}
+            value={values.userName}
             className={classes.input}
+            onChange={handleChange}
           />
-          {props.touched.userName && props.errors.userName && (
-            <div>{props.errors.userName}</div>
-          )}
+          {touched.userName && errors.userName && <div>{errors.userName}</div>}
           <TextField
             id="password"
             label="Password"
             type="password"
             autoComplete="current-password"
             required
-            value={props.values.password}
-            onChange={props.handleChange}
+            value={values.password}
             className={classes.input}
+            onChange={handleChange}
           />
-          {props.touched.password && props.errors.password && (
-            <div>{props.errors.password}</div>
-          )}
+          {touched.password && errors.password && <div>{errors.password}</div>}
           <Button
             className={classes.loginButton}
             variant="contained"
             color="primary"
             type="submit"
-            disabled={props.isSubmitting}
+            disabled={isSubmitting}
           >
             CREATE
           </Button>
@@ -116,16 +114,20 @@ const InnerForm: React.SFC<InjectedFormikProps<FormProps, FormValues>> = (
   )
 }
 
-const SignUp = withFormik<FormProps, FormValues>({
-  mapPropsToValues: () => ({ mailAddress: '', userName: '', password: '' }),
-  validationSchema: Yup.object().shape({
-    mailAddress: Yup.string().required('required mailAddress'),
-    userName: Yup.string().required('required userName'),
-    password: Yup.string().required('required password'),
-  }),
-  handleSubmit: (values, { setSubmitting }) => {
-    setTimeout(() => {
-      return fetch(`${process.env.REACT_APP_API_URL}/signUp`, {
+type SignUpFormProps = {
+  mailAddress?: string
+  userName?: string
+  password?: string
+}
+
+const createAccount = (
+  values: FormValues,
+  setSubmitting: (arg0: boolean) => void
+) => {
+  setTimeout(() => {
+    fetch(
+      `${process.env.REACT_APP_API_URL || 'http://localhost:8080'}/signUp`,
+      {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,27 +137,39 @@ const SignUp = withFormik<FormProps, FormValues>({
           userName: `${values.userName}`,
           password: `${values.password}`,
         }),
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`${res.status} ${res.statusText}`)
+        }
+
+        return res.blob()
       })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error(`${res.status} ${res.statusText}`)
-          }
-          return res.blob()
-        })
-        .then((res) => {
-          return res.text()
-        })
-        .then((res) => {
-          setSubmitting(false)
-          console.log(res)
-          localStorage.setItem('task_checker_token', res)
-          window.location.href = '/'
-        })
-        .catch((error) => {
-          setSubmitting(false)
-          window.alert(error)
-        })
-    }, 1000)
+      .then((res) => {
+        return res.text()
+      })
+      .then((res) => {
+        setSubmitting(false)
+        localStorage.setItem('task_checker_token', res)
+        window.location.href = '/'
+      })
+      .catch((error) => {
+        setSubmitting(false)
+        throw error
+      })
+  }, 1000)
+}
+
+const SignUp = withFormik<SignUpFormProps, FormValues>({
+  mapPropsToValues: () => ({ mailAddress: '', userName: '', password: '' }),
+  validationSchema: Yup.object().shape({
+    mailAddress: Yup.string().required('required mailAddress'),
+    userName: Yup.string().required('required userName'),
+    password: Yup.string().required('required password'),
+  }),
+  handleSubmit: (values, { setSubmitting }) => {
+    createAccount(values, setSubmitting)
   },
 })(InnerForm)
 

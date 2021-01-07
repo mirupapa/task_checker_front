@@ -91,6 +91,7 @@ module.exports = {
         explicitSpread: 'ignore',
       },
     ],
+    'quotes': ["warn", "single"]
   },
   overrides: [
     {
