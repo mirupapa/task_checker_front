@@ -61,7 +61,7 @@ const InnerForm = (props: FormikHandlers & FormikProps<FormValues>) => {
     <form className={classes.root} onSubmit={handleSubmit}>
       <Paper className={classes.paper}>
         <Typography align="center" className={classes.typo}>
-          SIGN UP
+          TASK CHECKER
         </Typography>
         <Grid container justify="center">
           <div>
