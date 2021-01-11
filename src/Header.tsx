@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 import grey from '@material-ui/core/colors/grey'
 import AccountCircleIcon from '@material-ui/icons/AccountCircle'
-import { UserInfoState } from './Slice/UserInfo'
+import { RootState } from './reducer/reducers'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,11 +32,11 @@ const Header: React.FC = () => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState<Element>()
   const [userName, setUserName] = useState<string>('')
-  const userInfo = useSelector<UserInfoState>((state) => state.UserInfo)
+  const userInfo = useSelector((state: RootState) => state.loginUserInfo)
 
   useEffect(() => {
     if (userInfo) {
-      setUserName((userInfo as UserInfoState['UserInfo']).UserName)
+      setUserName(userInfo.UserName)
     }
   }, [userInfo])
 
