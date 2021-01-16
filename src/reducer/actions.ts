@@ -11,5 +11,4 @@ const info = (resource: UserType): infoType => ({
   payload: resource,
 })
 
-// eslint-disable-next-line import/prefer-default-export
 export { info }

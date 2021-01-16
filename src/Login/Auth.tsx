@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Paper, CircularProgress } from '@material-ui/core'
 import kyApi from '../API/kyAPI'
 import { UserType } from './LoginType'
-import { types } from '../reducer'
+import { actions } from '../reducer'
 
 const useStyles = makeStyles({
   parent: {
@@ -29,7 +29,7 @@ const Auth = (props: { children: unknown }): JSX.Element => {
       window.location.href = '/login'
     }
     setAuth(true)
-    dispatch({ type: types.INFO, payload: response })
+    dispatch(actions.info(response as UserType))
 
     return response
   }
